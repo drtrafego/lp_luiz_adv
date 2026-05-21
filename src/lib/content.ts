@@ -67,11 +67,11 @@ export const diferenciais = {
   titulo: "Por que trabalhar com a gente",
   lista: [
     "23 anos de experiência em direito tributário",
-    "Atuação 100% dentro da legalidade, sem riscos desnecessários",
+    "Atuação 100% dentro da legalidade — sem riscos desnecessários",
     "Avaliamos seu caso antes de qualquer proposta",
     "Transparência total sobre riscos e possibilidades",
     "Atendimento presencial e remoto em todo o Brasil",
-    "Relação de confiança, não de transação",
+    "Relação de confiança — não de transação",
   ],
 };
 

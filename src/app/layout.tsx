@@ -6,7 +6,10 @@ import {
   Instrument_Serif,
   Geist_Mono,
 } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
+import { MetaPixel } from "@/components/MetaPixel";
+import { GA4 } from "@/components/GA4";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -50,7 +53,11 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${inter.variable} ${cormorant.variable} ${fraunces.variable} ${instrument.variable} ${geistMono.variable} antialiased`}
     >
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen">
+        <MetaPixel />
+        <GA4 />
+        <Suspense fallback={null}>{children}</Suspense>
+      </body>
     </html>
   );
 }

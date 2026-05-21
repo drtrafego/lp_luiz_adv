@@ -7,6 +7,7 @@ import {
   MagneticButton,
   ParallaxY,
 } from "@/components/motion-primitives";
+import { ContactForm } from "@/components/ContactForm";
 import {
   headlines,
   subheadline,
@@ -178,7 +179,7 @@ export default function V1() {
       {/* PROBLEMA */}
       <section
         id="problema"
-        className="relative mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-32"
+        className="relative mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-24"
       >
         <div className="grid md:grid-cols-12 gap-10">
           <div className="md:col-span-4">
@@ -211,7 +212,7 @@ export default function V1() {
       </section>
 
       {/* DOR */}
-      <section className="relative bg-[var(--color-v1-ink)] text-[var(--color-v1-paper)] py-24 md:py-40 overflow-hidden">
+      <section className="relative bg-[var(--color-v1-ink)] text-[var(--color-v1-paper)] py-20 md:py-28 overflow-hidden">
         <ParallaxY
           range={80}
           className="absolute -top-40 -right-40 w-[800px] h-[800px] rounded-full bg-[var(--color-v1-gold)]/8 blur-3xl"
@@ -254,7 +255,7 @@ export default function V1() {
       {/* SOLUÇÃO */}
       <section
         id="solucao"
-        className="relative mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-32"
+        className="relative mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-24"
       >
         <Reveal>
           <div className="text-xs uppercase tracking-[0.3em] text-[var(--color-v1-gold)]">
@@ -303,7 +304,7 @@ export default function V1() {
       </section>
 
       {/* PROVA SOCIAL */}
-      <section className="relative bg-[var(--color-v1-paper)] py-24 md:py-32 border-y border-[var(--color-v1-ink)]/10">
+      <section className="relative bg-[var(--color-v1-paper)] py-20 md:py-24 border-y border-[var(--color-v1-ink)]/10">
         <div className="mx-auto max-w-5xl px-6 md:px-10 text-center">
           <Reveal>
             <div className="text-xs uppercase tracking-[0.3em] text-[var(--color-v1-gold)]">
@@ -343,7 +344,7 @@ export default function V1() {
       </section>
 
       {/* DIFERENCIAIS */}
-      <section className="relative mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-32">
+      <section className="relative mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-24">
         <div className="grid md:grid-cols-12 gap-10">
           <div className="md:col-span-5">
             <Reveal>
@@ -353,7 +354,7 @@ export default function V1() {
             </Reveal>
             <Reveal delay={0.1}>
               <h2 className="mt-6 font-serif text-[clamp(2rem,3.6vw,3.5rem)] leading-[1.05] tracking-tight">
-                {diferenciais.titulo}.
+                {diferenciais.titulo}
               </h2>
             </Reveal>
           </div>
@@ -379,7 +380,7 @@ export default function V1() {
       {/* COMO FUNCIONA */}
       <section
         id="como-funciona"
-        className="relative bg-[var(--color-v1-ink)] text-[var(--color-v1-paper)] py-24 md:py-32"
+        className="relative bg-[var(--color-v1-ink)] text-[var(--color-v1-paper)] py-20 md:py-24"
       >
         <div className="mx-auto max-w-7xl px-6 md:px-10">
           <Reveal>
@@ -424,7 +425,7 @@ export default function V1() {
       {/* CTA FINAL */}
       <section
         id="contato"
-        className="relative mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-40"
+        className="relative mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-28"
       >
         <div className="grid md:grid-cols-12 gap-10">
           <div className="md:col-span-7">
@@ -446,7 +447,7 @@ export default function V1() {
             <Reveal delay={0.4} className="mt-10 flex flex-wrap gap-4">
               <MagneticButton>
                 <a
-                  href="#"
+                  href="#contato"
                   className="group relative inline-flex items-center gap-3 rounded-full bg-[var(--color-v1-ink)] text-[var(--color-v1-paper)] px-8 py-4 text-sm font-medium overflow-hidden"
                 >
                   <span className="relative z-10">{ctaFinal.principal}</span>
@@ -458,7 +459,7 @@ export default function V1() {
               </MagneticButton>
               <MagneticButton>
                 <a
-                  href="#"
+                  href="#contato"
                   className="inline-flex items-center gap-2 rounded-full border border-[var(--color-v1-ink)]/20 px-8 py-4 text-sm font-medium hover:border-[var(--color-v1-ink)]/60 transition-colors"
                 >
                   {ctaFinal.secundario}
@@ -468,30 +469,7 @@ export default function V1() {
           </div>
           <div className="md:col-span-5">
             <Reveal delay={0.3}>
-              <div className="rounded-2xl border border-[var(--color-v1-ink)]/10 p-8 bg-[var(--color-v1-paper)]/40">
-                <div className="text-xs uppercase tracking-[0.25em] text-[var(--color-v1-gold)]">
-                  Primeira conversa
-                </div>
-                <div className="mt-3 font-serif text-3xl">
-                  Gratuita e confidencial.
-                </div>
-                <div className="mt-8 space-y-3 text-sm text-[var(--color-v1-ink-soft)]">
-                  <div className="flex justify-between">
-                    <span>Resposta em</span>
-                    <span className="font-medium">até 1 dia útil</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Atendimento</span>
-                    <span className="font-medium">
-                      Presencial e remoto · Brasil
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>OAB ativa</span>
-                    <span className="font-medium">SP</span>
-                  </div>
-                </div>
-              </div>
+              <ContactForm modelo="v1" />
             </Reveal>
           </div>
         </div>

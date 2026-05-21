@@ -9,6 +9,7 @@ import {
   Tilt3D,
   useCursorSpotlight,
 } from "@/components/motion-primitives";
+import { ContactForm } from "@/components/ContactForm";
 import {
   headlines,
   subheadline,
@@ -102,7 +103,7 @@ export default function V2() {
         <MagneticButton>
           <a
             href="#contato"
-            className="group relative overflow-hidden rounded-full px-5 py-2.5 text-xs uppercase tracking-[0.18em] border border-[var(--color-v2-gold)]/40 hover:border-[var(--color-v2-gold)] transition-colors"
+            className="group relative overflow-hidden rounded-full px-5 py-2.5 text-xs uppercase tracking-[0.18em] border border-[var(--color-v2-gold)]/60 hover:border-[var(--color-v2-gold)] transition-colors"
           >
             <span className="relative z-10">Conversar</span>
             <span className="absolute inset-0 bg-[var(--color-v2-gold)] -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
@@ -224,7 +225,7 @@ export default function V2() {
       {/* PROBLEMA */}
       <section
         id="problema"
-        className="relative mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-32"
+        className="relative mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-24"
       >
         <div className="grid md:grid-cols-12 gap-10">
           <div className="md:col-span-4">
@@ -262,7 +263,7 @@ export default function V2() {
       </section>
 
       {/* DOR */}
-      <section className="relative py-24 md:py-40 overflow-hidden">
+      <section className="relative py-20 md:py-28 overflow-hidden">
         <div
           aria-hidden
           className="absolute inset-0"
@@ -332,7 +333,7 @@ export default function V2() {
       {/* SOLUÇÃO */}
       <section
         id="solucao"
-        className="relative mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-32"
+        className="relative mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-24"
       >
         <Reveal>
           <div className="font-mono text-xs uppercase tracking-[0.3em] text-[var(--color-v2-gold)]">
@@ -388,7 +389,7 @@ export default function V2() {
       </section>
 
       {/* PROVA SOCIAL */}
-      <section className="relative py-24 md:py-32 border-y border-[var(--color-v2-line)]">
+      <section className="relative py-20 md:py-24 border-y border-[var(--color-v2-line)]">
         <div className="mx-auto max-w-5xl px-6 md:px-10 text-center">
           <Reveal>
             <div className="font-mono text-xs uppercase tracking-[0.3em] text-[var(--color-v2-gold)]">
@@ -409,7 +410,7 @@ export default function V2() {
       </section>
 
       {/* DIFERENCIAIS */}
-      <section className="relative mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-32">
+      <section className="relative mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-24">
         <div className="grid md:grid-cols-12 gap-10">
           <div className="md:col-span-5">
             <Reveal>
@@ -419,7 +420,7 @@ export default function V2() {
             </Reveal>
             <Reveal delay={0.1}>
               <h2 className="mt-6 font-display text-[clamp(2rem,3.6vw,3.5rem)] leading-[1.05] tracking-tight">
-                {diferenciais.titulo}.
+                {diferenciais.titulo}
               </h2>
             </Reveal>
           </div>
@@ -445,7 +446,7 @@ export default function V2() {
       {/* COMO FUNCIONA */}
       <section
         id="como-funciona"
-        className="relative py-24 md:py-32 overflow-hidden"
+        className="relative py-20 md:py-24 overflow-hidden"
       >
         <div className="mx-auto max-w-7xl px-6 md:px-10">
           <Reveal>
@@ -490,7 +491,7 @@ export default function V2() {
       {/* CTA FINAL */}
       <section
         id="contato"
-        className="relative py-24 md:py-40 overflow-hidden"
+        className="relative py-20 md:py-28 overflow-hidden"
       >
         <div
           aria-hidden
@@ -500,45 +501,29 @@ export default function V2() {
               "radial-gradient(ellipse at center, rgba(255,106,26,0.12), transparent 70%)",
           }}
         />
-        <div className="relative mx-auto max-w-5xl px-6 md:px-10 text-center">
-          <Reveal>
-            <h2 className="font-display text-[clamp(2.4rem,5vw,5rem)] leading-[1.02] tracking-tight text-balance">
-              <WordReveal text={ctaFinal.titulo} />
-            </h2>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="mt-8 text-xl text-[var(--color-v2-fg-soft)] leading-relaxed max-w-2xl mx-auto">
-              {ctaFinal.texto}
-            </p>
-          </Reveal>
-          <Reveal delay={0.3}>
-            <p className="mt-4 text-base text-[var(--color-v2-fg-soft)]/80 max-w-2xl mx-auto">
-              {ctaFinal.apoio}
-            </p>
-          </Reveal>
-          <Reveal delay={0.4}>
-            <div className="mt-12 flex flex-wrap gap-4 justify-center">
-              <MagneticButton strength={0.5}>
-                <a
-                  href="#"
-                  className="group relative inline-flex items-center gap-3 rounded-full px-10 py-5 text-base font-medium overflow-hidden bg-[var(--color-v2-gold)] text-[var(--color-v2-bg)]"
-                >
-                  <span className="relative z-10">{ctaFinal.principal}</span>
-                  <span className="relative z-10 transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </a>
-              </MagneticButton>
-              <MagneticButton>
-                <a
-                  href="#"
-                  className="inline-flex items-center gap-2 rounded-full border border-[var(--color-v2-line)] hover:border-[var(--color-v2-gold)]/60 px-10 py-5 text-base font-medium transition-colors"
-                >
-                  {ctaFinal.secundario}
-                </a>
-              </MagneticButton>
-            </div>
-          </Reveal>
+        <div className="relative mx-auto max-w-7xl px-6 md:px-10 grid lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-7">
+            <Reveal>
+              <h2 className="font-display text-[clamp(2.2rem,4.5vw,4.5rem)] leading-[1.02] tracking-tight text-balance">
+                <WordReveal text={ctaFinal.titulo} />
+              </h2>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <p className="mt-8 text-xl text-[var(--color-v2-fg-soft)] leading-relaxed max-w-xl">
+                {ctaFinal.texto}
+              </p>
+            </Reveal>
+            <Reveal delay={0.3}>
+              <p className="mt-4 text-base text-[var(--color-v2-fg-soft)]/80 max-w-xl">
+                {ctaFinal.apoio}
+              </p>
+            </Reveal>
+          </div>
+          <div className="lg:col-span-5">
+            <Reveal delay={0.3}>
+              <ContactForm modelo="v2" />
+            </Reveal>
+          </div>
         </div>
       </section>
 

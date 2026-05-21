@@ -7,6 +7,7 @@ import {
   MagneticButton,
   Tilt3D,
 } from "@/components/motion-primitives";
+import { ContactForm } from "@/components/ContactForm";
 import {
   headlines,
   subheadline,
@@ -18,18 +19,9 @@ import {
   comoFunciona,
   ctaFinal,
 } from "@/lib/content";
-import { motion, useScroll, useSpring, useTransform } from "motion/react";
-import { useRef } from "react";
+import { motion, useScroll, useSpring } from "motion/react";
 
 export default function V3() {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const horizontalRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: hScroll } = useScroll({
-    target: horizontalRef,
-    offset: ["start start", "end end"],
-  });
-  const xMove = useTransform(hScroll, [0, 1], ["0%", "-66%"]);
-
   const { scrollYProgress: full } = useScroll();
   const bar = useSpring(full, { stiffness: 80, damping: 20 });
 
@@ -84,7 +76,6 @@ export default function V3() {
 
       {/* HERO */}
       <section
-        ref={heroRef}
         className="relative pt-32 md:pt-40 pb-24 md:pb-32 px-6 md:px-10"
       >
         <div className="mx-auto max-w-7xl">
@@ -199,7 +190,7 @@ export default function V3() {
       </section>
 
       {/* PROBLEMA + Bento */}
-      <section id="problema" className="relative py-24 md:py-32 px-6 md:px-10">
+      <section id="problema" className="relative py-20 md:py-24 px-6 md:px-10">
         <div className="mx-auto max-w-7xl">
           <div className="grid md:grid-cols-12 gap-10 items-end mb-12">
             <div className="md:col-span-5">
@@ -303,76 +294,75 @@ export default function V3() {
         </div>
       </section>
 
-      {/* SOLUÇÃO - Horizontal scroll pin */}
-      <section
-        id="solucao"
-        ref={horizontalRef}
-        className="relative h-[300vh]"
-      >
-        <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
-          <div className="mx-auto max-w-7xl px-6 md:px-10 w-full">
-            <Reveal>
-              <div className="text-xs uppercase tracking-[0.22em] text-[var(--color-v3-accent)]">
-                Atuação · 03
-              </div>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <h2 className="mt-4 text-[clamp(1.8rem,3.2vw,3rem)] leading-[1.06] tracking-[-0.02em] font-medium max-w-3xl text-balance">
-                {solucao.titulo}
-              </h2>
-            </Reveal>
+      {/* SOLUÇÃO */}
+      <section id="solucao" className="relative px-6 md:px-10 py-20 md:py-28">
+        <div className="mx-auto max-w-7xl">
+          <Reveal>
+            <div className="text-xs uppercase tracking-[0.22em] text-[var(--color-v3-accent)]">
+              Atuação · 03
+            </div>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <h2 className="mt-4 text-[clamp(1.8rem,3.2vw,3rem)] leading-[1.06] tracking-[-0.02em] font-medium max-w-3xl text-balance">
+              {solucao.titulo}
+            </h2>
+          </Reveal>
+          <Reveal delay={0.2}>
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[var(--color-v3-ink-soft)]">
+              {solucao.intro}
+            </p>
+          </Reveal>
+
+          <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {solucao.servicos.map((s, i) => (
+              <Reveal key={s.nome} delay={i * 0.08}>
+                <Tilt3D intensity={8} className="h-full">
+                  <motion.div
+                    whileHover={{ y: -6 }}
+                    transition={{ duration: 0.4 }}
+                    className="relative h-full rounded-3xl border border-[var(--color-v3-ink)]/8 bg-[var(--color-v3-paper)] p-8 overflow-hidden flex flex-col"
+                  >
+                    <div className="font-mono text-xs text-[var(--color-v3-accent)] tracking-widest">
+                      0{i + 1} / 03
+                    </div>
+                    <h3 className="mt-6 text-2xl md:text-3xl font-medium leading-tight tracking-[-0.01em]">
+                      {s.nome}
+                    </h3>
+                    <p className="mt-4 text-base leading-relaxed text-[var(--color-v3-ink-soft)] text-pretty flex-1">
+                      {s.descricao}
+                    </p>
+                    <div className="mt-8 inline-flex items-center gap-3 text-sm text-[var(--color-v3-accent)]">
+                      <span className="h-px w-10 bg-[var(--color-v3-accent)]" />
+                      Saiba mais
+                    </div>
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute -top-20 -right-20 w-56 h-56 rounded-full opacity-20 blur-3xl"
+                      style={{
+                        background:
+                          i === 0
+                            ? "var(--color-v3-accent-2)"
+                            : i === 1
+                              ? "var(--color-v3-accent)"
+                              : "var(--color-v3-ink-soft)",
+                      }}
+                    />
+                  </motion.div>
+                </Tilt3D>
+              </Reveal>
+            ))}
           </div>
 
-          <div className="mt-12 overflow-hidden">
-            <motion.div
-              style={{ x: xMove }}
-              className="flex gap-6 px-6 md:px-10 will-change-transform"
-            >
-              {solucao.servicos.map((s, i) => (
-                <div
-                  key={s.nome}
-                  className="relative flex-shrink-0 w-[85vw] md:w-[60vw] lg:w-[42vw] rounded-3xl border border-[var(--color-v3-ink)]/8 bg-[var(--color-v3-paper)] p-10 overflow-hidden"
-                >
-                  <div className="font-mono text-xs text-[var(--color-v3-accent)] tracking-widest">
-                    0{i + 1} / 03
-                  </div>
-                  <h3 className="mt-8 text-3xl md:text-4xl font-medium leading-tight tracking-[-0.01em]">
-                    {s.nome}
-                  </h3>
-                  <p className="mt-6 text-lg leading-relaxed text-[var(--color-v3-ink-soft)] max-w-md text-pretty">
-                    {s.descricao}
-                  </p>
-                  <div className="absolute bottom-10 right-10 flex items-center gap-3 text-sm text-[var(--color-v3-accent)]">
-                    <span className="h-px w-10 bg-[var(--color-v3-accent)]" />
-                    Saiba mais
-                  </div>
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute -top-20 -right-20 w-72 h-72 rounded-full opacity-20 blur-3xl"
-                    style={{
-                      background:
-                        i === 0
-                          ? "var(--color-v3-accent-2)"
-                          : i === 1
-                            ? "var(--color-v3-accent)"
-                            : "var(--color-v3-ink-soft)",
-                    }}
-                  />
-                </div>
-              ))}
-            </motion.div>
-          </div>
-
-          <div className="mx-auto max-w-7xl px-6 md:px-10 w-full mt-10">
-            <p className="font-instrument italic text-xl md:text-2xl text-[var(--color-v3-ink-soft)] max-w-3xl">
+          <Reveal delay={0.4}>
+            <p className="mt-12 font-instrument italic text-xl md:text-2xl text-[var(--color-v3-ink-soft)] max-w-3xl">
               “{solucao.outro}”
             </p>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* PROVA SOCIAL */}
-      <section className="relative py-24 md:py-32 px-6 md:px-10">
+      <section className="relative py-20 md:py-24 px-6 md:px-10">
         <div className="mx-auto max-w-7xl text-center">
           <Reveal>
             <div className="text-xs uppercase tracking-[0.22em] text-[var(--color-v3-accent)]">
@@ -399,7 +389,7 @@ export default function V3() {
       </section>
 
       {/* DIFERENCIAIS - bento alternado */}
-      <section className="relative py-24 md:py-32 px-6 md:px-10 bg-[var(--color-v3-paper)]">
+      <section className="relative py-20 md:py-24 px-6 md:px-10 bg-[var(--color-v3-paper)]">
         <div className="mx-auto max-w-7xl">
           <div className="grid md:grid-cols-12 gap-10 mb-12">
             <div className="md:col-span-5">
@@ -410,7 +400,7 @@ export default function V3() {
               </Reveal>
               <Reveal delay={0.1}>
                 <h2 className="mt-6 text-[clamp(2rem,3.6vw,3.5rem)] leading-[1.04] tracking-[-0.02em] font-medium">
-                  {diferenciais.titulo}.
+                  {diferenciais.titulo}
                 </h2>
               </Reveal>
             </div>
@@ -449,7 +439,7 @@ export default function V3() {
       {/* COMO FUNCIONA */}
       <section
         id="metodo"
-        className="relative py-24 md:py-32 px-6 md:px-10"
+        className="relative py-20 md:py-24 px-6 md:px-10"
       >
         <div className="mx-auto max-w-7xl">
           <div className="grid md:grid-cols-12 gap-10 mb-16">
@@ -495,7 +485,7 @@ export default function V3() {
       </section>
 
       {/* CTA FINAL */}
-      <section id="contato" className="relative py-24 md:py-40 px-6 md:px-10">
+      <section id="contato" className="relative py-20 md:py-28 px-6 md:px-10">
         <div className="mx-auto max-w-7xl">
           <Tilt3D intensity={4}>
             <div className="relative rounded-[2.5rem] bg-[var(--color-v3-ink)] text-[var(--color-v3-bg)] p-10 md:p-20 overflow-hidden">
@@ -538,57 +528,20 @@ export default function V3() {
                     </p>
                   </Reveal>
                   <Reveal delay={0.4}>
-                    <div className="mt-10 flex flex-wrap gap-3">
-                      <MagneticButton strength={0.45}>
-                        <a
-                          href="#"
-                          className="group inline-flex items-center gap-3 rounded-full bg-[var(--color-v3-bg)] text-[var(--color-v3-ink)] px-8 py-4 text-sm font-medium hover:bg-[var(--color-v3-accent)] hover:text-[var(--color-v3-bg)] transition-colors"
-                        >
-                          {ctaFinal.principal}
-                          <span className="transition-transform group-hover:translate-x-1">
-                            →
-                          </span>
-                        </a>
-                      </MagneticButton>
-                      <MagneticButton>
-                        <a
-                          href="#"
-                          className="inline-flex items-center gap-2 rounded-full border border-[var(--color-v3-bg)]/20 hover:border-[var(--color-v3-bg)]/60 px-8 py-4 text-sm font-medium transition-colors"
-                        >
-                          {ctaFinal.secundario}
-                        </a>
-                      </MagneticButton>
+                    <div className="mt-8 flex flex-wrap gap-3 text-sm text-[var(--color-v3-bg)]/70">
+                      <span>Conversa gratuita</span>
+                      <span className="opacity-50">·</span>
+                      <span>Sigilo total</span>
+                      <span className="opacity-50">·</span>
+                      <span>Atendimento Brasil</span>
+                      <span className="opacity-50">·</span>
+                      <span>Retorno em 1 dia útil</span>
                     </div>
                   </Reveal>
                 </div>
                 <div className="md:col-span-4">
-                  <Reveal delay={0.5}>
-                    <div className="rounded-2xl bg-[var(--color-v3-bg)]/10 backdrop-blur border border-[var(--color-v3-bg)]/10 p-6 space-y-3 text-sm">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[var(--color-v3-bg)]/60">
-                          Conversa
-                        </span>
-                        <span>Gratuita</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[var(--color-v3-bg)]/60">
-                          Sigilo
-                        </span>
-                        <span>Total</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[var(--color-v3-bg)]/60">
-                          Atendimento
-                        </span>
-                        <span>Brasil</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[var(--color-v3-bg)]/60">
-                          Retorno
-                        </span>
-                        <span>1 dia útil</span>
-                      </div>
-                    </div>
+                  <Reveal delay={0.4}>
+                    <ContactForm modelo="v3" />
                   </Reveal>
                 </div>
               </div>
