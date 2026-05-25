@@ -10,20 +10,27 @@ declare global {
 }
 
 export function GA4() {
-  const id = process.env.NEXT_PUBLIC_GA4_ID;
-  if (!id) return null;
+  const gaId =
+    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ??
+    process.env.NEXT_PUBLIC_GA4_ID;
+  const adsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID;
+  if (!gaId && !adsId) return null;
+
+  const loaderId = gaId ?? adsId;
   return (
     <>
       <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${id}`}
+        src={`https://www.googletagmanager.com/gtag/js?id=${loaderId}`}
         strategy="afterInteractive"
       />
-      <Script id="ga4-init" strategy="afterInteractive">
+      <Script id="gtag-init" strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
+          window.gtag = gtag;
           gtag('js', new Date());
-          gtag('config', '${id}', { send_page_view: true });
+          ${gaId ? `gtag('config', '${gaId}', { send_page_view: false });` : ""}
+          ${adsId ? `gtag('config', '${adsId}');` : ""}
         `}
       </Script>
     </>

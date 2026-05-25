@@ -8,8 +8,8 @@ import {
 } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
-import { MetaPixel } from "@/components/MetaPixel";
 import { GA4 } from "@/components/GA4";
+import { TrackPageView } from "@/components/TrackPageView";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -54,8 +54,10 @@ export default function RootLayout({
       className={`${inter.variable} ${cormorant.variable} ${fraunces.variable} ${instrument.variable} ${geistMono.variable} antialiased`}
     >
       <body className="min-h-screen">
-        <MetaPixel />
         <GA4 />
+        <Suspense fallback={null}>
+          <TrackPageView />
+        </Suspense>
         <Suspense fallback={null}>{children}</Suspense>
       </body>
     </html>

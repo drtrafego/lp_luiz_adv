@@ -19,7 +19,7 @@ export const leads = pgTable("leads", {
   value: numeric("value"),
 
   organization_id: text("organization_id").notNull(),
-  column_id: uuid("column_id").notNull(),
+  column_id: uuid("column_id"),
 
   status: text("status").default("novo"),
   position: integer("position").default(0),

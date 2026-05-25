@@ -5,18 +5,39 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 type Variant = "v1" | "v2" | "v3";
 
-function getGaClientId(): string | undefined {
+function getCookie(name: string): string | undefined {
   if (typeof document === "undefined") return undefined;
-  const m = document.cookie.match(/_ga=GA\d+\.\d+\.(\d+\.\d+)/);
+  const m = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]+)`));
+  return m ? decodeURIComponent(m[1]) : undefined;
+}
+
+function getGaClientId(): string | undefined {
+  const raw = getCookie("_ga");
+  if (!raw) return undefined;
+  const m = raw.match(/^GA\d+\.\d+\.(\d+\.\d+)$/);
   return m ? m[1] : undefined;
 }
+
 function getGaSessionId(measurementId: string): string | undefined {
-  if (typeof document === "undefined") return undefined;
   const container = measurementId.replace("G-", "");
-  const m = document.cookie.match(
-    new RegExp(`_ga_${container}=GS[^;]*?\\.(\\d+)\\.`),
-  );
+  const raw = getCookie(`_ga_${container}`);
+  if (!raw) return undefined;
+  const m = raw.match(/^GS[^.]*\.\d+\.(\d+)\./);
   return m ? m[1] : undefined;
+}
+
+function readGcl(name: string): string | undefined {
+  const raw = getCookie(`_gcl_${name}`);
+  if (!raw) return undefined;
+  const m = raw.match(/^GCL\.\d+\.(.+)$/);
+  return m ? m[1] : raw;
+}
+
+function generateEventId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `eid_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
 function maskPhone(v: string): string {
@@ -127,11 +148,23 @@ export function ContactForm({
 
     setLoading(true);
     try {
-      const measurementId = process.env.NEXT_PUBLIC_GA4_ID ?? "";
+      const measurementId =
+        process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ??
+        process.env.NEXT_PUBLIC_GA4_ID ??
+        "";
+      const eventId = generateEventId();
+      const gclid = params.get("gclid") ?? readGcl("aw");
+      const wbraid = params.get("wbraid") ?? readGcl("wbraid");
+      const gbraid = params.get("gbraid") ?? readGcl("gbraid");
+
       const payload = {
         name: name.trim(),
         whatsapp: digits,
         modelo,
+        event_id: eventId,
+        gclid,
+        wbraid,
+        gbraid,
         ...utms,
         ga_client_id: getGaClientId(),
         ga_session_id: measurementId ? getGaSessionId(measurementId) : undefined,
@@ -146,6 +179,28 @@ export function ContactForm({
       if (!r.ok || !json.success) throw new Error("falha");
 
       const leadId = json.leadId ?? `fallback_${Date.now()}`;
+      const leadValue = Number(process.env.NEXT_PUBLIC_LEAD_VALUE ?? "1000");
+      const leadCurrency = process.env.NEXT_PUBLIC_LEAD_CURRENCY ?? "BRL";
+      const conversionId = process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID;
+      const conversionLabel =
+        process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL;
+
+      if (typeof window.gtag === "function") {
+        if (conversionId && conversionLabel) {
+          window.gtag("event", "conversion", {
+            send_to: `${conversionId}/${conversionLabel}`,
+            transaction_id: leadId,
+            value: leadValue,
+            currency: leadCurrency,
+          });
+        }
+        window.gtag("event", "generate_lead", {
+          transaction_id: leadId,
+          value: leadValue,
+          currency: leadCurrency,
+          lead_source: `modelo-${modelo}`,
+        });
+      }
 
       try {
         sessionStorage.setItem(

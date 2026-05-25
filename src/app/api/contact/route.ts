@@ -1,29 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { getDb } from "@/lib/db";
 import { leads } from "@/lib/schema";
+import { ContactSchema } from "@/lib/tracking-schema";
 import {
-  parseGaClientId,
-  parseGaSessionId,
-  sendMetaCAPI,
-  sendGA4MP,
+  buildUserExtrasFromName,
+  parseRequestContext,
+  sendGA4Event,
+  sendGoogleAdsConversion,
 } from "@/lib/tracking-server";
 
 export const runtime = "nodejs";
-
-const ContactSchema = z.object({
-  name: z.string().min(2).max(120),
-  whatsapp: z.string().min(10).max(20),
-  email: z.string().email().optional(),
-  utm_source: z.string().optional(),
-  utm_medium: z.string().optional(),
-  utm_campaign: z.string().optional(),
-  utm_term: z.string().optional(),
-  utm_content: z.string().optional(),
-  modelo: z.string().optional(),
-  ga_client_id: z.string().optional(),
-  ga_session_id: z.string().optional(),
-});
 
 function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
   return Promise.race([
@@ -34,15 +20,16 @@ function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
   ]);
 }
 
-function parseCookie(header: string | null, name: string): string | undefined {
-  if (!header) return undefined;
-  const m = header.match(new RegExp(`(?:^|; )${name}=([^;]+)`));
-  return m ? decodeURIComponent(m[1]) : undefined;
-}
-
 function syntheticEmail(whatsapp: string): string {
   const digits = whatsapp.replace(/\D/g, "");
   return `lead-${digits}@noemail.luizfernando.adv.br`;
+}
+
+function readLeadValue(): { value: number; currency: string } {
+  const v = Number(process.env.NEXT_PUBLIC_LEAD_VALUE);
+  const value = Number.isFinite(v) && v >= 0 ? v : 1000;
+  const currency = process.env.NEXT_PUBLIC_LEAD_CURRENCY ?? "BRL";
+  return { value, currency };
 }
 
 export async function POST(req: NextRequest) {
@@ -67,27 +54,17 @@ export async function POST(req: NextRequest) {
   const input = parsed.data;
   const email = input.email ?? syntheticEmail(input.whatsapp);
 
-  const cookieHeader = req.headers.get("cookie") ?? "";
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  const userAgent = req.headers.get("user-agent") ?? undefined;
-  const fbc = parseCookie(cookieHeader, "_fbc");
-  const fbp = parseCookie(cookieHeader, "_fbp");
-  const eventSourceUrl =
-    req.headers.get("origin") ??
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    undefined;
-  const measurementId = process.env.NEXT_PUBLIC_GA4_ID;
-  const gaClientId =
-    input.ga_client_id ?? parseGaClientId(cookieHeader) ?? undefined;
-  const gaSessionId =
-    input.ga_session_id ??
-    (measurementId ? parseGaSessionId(cookieHeader, measurementId) : undefined);
+  const context = parseRequestContext(req);
+  const gclid = input.gclid ?? context.gclid;
+  const wbraid = input.wbraid ?? context.wbraid;
+  const gbraid = input.gbraid ?? context.gbraid;
+  const gaClientId = input.ga_client_id ?? context.gaClientId;
+  const gaSessionId = input.ga_session_id ?? context.gaSessionId;
 
   const orgId = process.env.ORGANIZATION_ID;
-  const colId = process.env.DEFAULT_COLUMN_ID;
 
   let leadId: string;
-  if (orgId && colId && process.env.DATABASE_URL) {
+  if (orgId && process.env.DATABASE_URL) {
     try {
       const [row] = await withTimeout(
         getDb()
@@ -97,7 +74,6 @@ export async function POST(req: NextRequest) {
             email,
             whatsapp: input.whatsapp,
             organization_id: orgId,
-            column_id: colId,
             utm_source: input.utm_source,
             utm_medium: input.utm_medium,
             utm_campaign: input.utm_campaign,
@@ -121,28 +97,43 @@ export async function POST(req: NextRequest) {
     leadId = `fallback_${Date.now()}`;
   }
 
-  void Promise.all([
-    sendMetaCAPI({
-      leadId,
-      name: input.name,
-      email,
-      whatsapp: input.whatsapp,
-      modelo: input.modelo,
-      ip,
-      userAgent,
-      fbc,
-      fbp,
-      eventSourceUrl,
-    }),
-    sendGA4MP({
-      leadId,
-      modelo: input.modelo,
+  const userExtras = buildUserExtrasFromName(
+    input.name,
+    email,
+    input.whatsapp,
+  );
+  const { value, currency } = readLeadValue();
+  const trackingContext = {
+    ...context,
+    gclid,
+    wbraid,
+    gbraid,
+    gaClientId,
+    gaSessionId,
+  };
+
+  void Promise.allSettled([
+    sendGA4Event({
+      eventName: "generate_lead",
       clientId: gaClientId,
       sessionId: gaSessionId,
-      userAgent,
-      eventSourceUrl,
+      userAgent: context.userAgent,
+      transactionId: leadId,
+      value,
+      currency,
+      params: {
+        lead_source: input.modelo ? `modelo-${input.modelo}` : "default",
+        event_id: input.event_id,
+      },
     }),
-  ]).catch((err) => console.error("[contact] tracking err:", err));
+    sendGoogleAdsConversion({
+      context: trackingContext,
+      userExtras,
+      orderId: leadId,
+      conversionValue: value,
+      currency,
+    }),
+  ]);
 
   return NextResponse.json({ success: true, leadId }, { status: 200 });
 }

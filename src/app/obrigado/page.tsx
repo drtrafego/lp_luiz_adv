@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
 
@@ -19,6 +19,7 @@ export default function Obrigado() {
   const modelo = params.get("m") ?? undefined;
   const [count, setCount] = useState(3);
   const [name, setName] = useState<string | undefined>();
+  const contactFiredRef = useRef(false);
 
   useEffect(() => {
     try {
@@ -32,40 +33,51 @@ export default function Obrigado() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-
-    if (typeof window.fbq === "function" && leadId) {
-      window.fbq("track", "Lead", {}, { eventID: leadId });
-    }
-
-    if (typeof window.gtag === "function") {
-      window.gtag("event", "generate_lead", {
-        currency: "BRL",
-        lead_id: leadId,
-        lead_source: modelo ? `modelo-${modelo}` : "default",
-      });
-    }
+    if (!leadId) return;
 
     window.dataLayer = window.dataLayer ?? [];
     window.dataLayer.push({
       event: "generate_lead",
       event_category: "formulario",
       modelo: modelo ?? "default",
-      lead_id: leadId,
+      transaction_id: leadId,
     });
   }, [leadId, modelo]);
+
+  const fireContact = useCallback(() => {
+    if (contactFiredRef.current) return;
+    contactFiredRef.current = true;
+    if (typeof window === "undefined") return;
+    if (typeof window.gtag === "function") {
+      window.gtag("event", "contact", { transaction_id: leadId });
+    }
+    try {
+      void fetch("/api/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event_name: "Contact",
+          event_id: leadId,
+          transaction_id: leadId,
+        }),
+        keepalive: true,
+      });
+    } catch {}
+  }, [leadId]);
 
   useEffect(() => {
     const tick = setInterval(() => {
       setCount((c) => (c > 0 ? c - 1 : 0));
     }, 1000);
     const redirect = setTimeout(() => {
+      fireContact();
       window.location.href = buildWhatsAppUrl(name);
     }, 3000);
     return () => {
       clearInterval(tick);
       clearTimeout(redirect);
     };
-  }, [name]);
+  }, [name, fireContact]);
 
   return (
     <main className="min-h-screen bg-[#050507] text-[#F4EFE6] flex items-center justify-center px-6">
@@ -116,6 +128,7 @@ export default function Obrigado() {
         >
           <a
             href={buildWhatsAppUrl(name)}
+            onClick={fireContact}
             className="inline-flex items-center gap-3 rounded-full bg-[#FF6A1A] text-[#050507] px-8 py-4 text-sm font-medium hover:bg-[#FFA060] transition-colors"
           >
             Ir para o WhatsApp agora

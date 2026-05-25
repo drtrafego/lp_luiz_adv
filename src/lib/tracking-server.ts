@@ -1,23 +1,48 @@
-export interface CAPIPayload {
-  leadId: string;
-  name: string;
-  email: string;
-  whatsapp: string;
-  modelo?: string;
+import { createHash, randomUUID } from "crypto";
+import type { NextRequest } from "next/server";
+import {
+  buildConversionDateTimeBR,
+  uploadClickConversion,
+  type UserIdentifier,
+} from "./google-ads";
+
+export interface RequestContext {
   ip?: string;
   userAgent?: string;
-  fbc?: string;
-  fbp?: string;
+  origin?: string;
   eventSourceUrl?: string;
+  externalId: string;
+  gaClientId?: string;
+  gaSessionId?: string;
+  gclid?: string;
+  wbraid?: string;
+  gbraid?: string;
+  country?: string;
+  city?: string;
+  postalCode?: string;
 }
 
-export interface GA4Payload {
-  leadId: string;
-  modelo?: string;
+export interface UserExtras {
+  email?: string;
+  phone?: string;
+  firstName?: string;
+  lastName?: string;
+}
+
+export interface GA4EventInput {
+  eventName: string;
   clientId?: string;
   sessionId?: string;
   userAgent?: string;
-  eventSourceUrl?: string;
+  transactionId?: string;
+  value?: number;
+  currency?: string;
+  params?: Record<string, string | number | boolean | undefined>;
+}
+
+function parseCookie(header: string, name: string): string | undefined {
+  const m = header.match(new RegExp(`(?:^|; )${name}=([^;]+)`));
+  return m ? decodeURIComponent(m[1]) : undefined;
 }
 
 export function parseGaClientId(cookieHeader: string): string | undefined {
@@ -36,104 +61,153 @@ export function parseGaSessionId(
   return match ? match[1] : undefined;
 }
 
-async function sha256(raw: string): Promise<string> {
-  const { createHash } = await import("crypto");
-  return createHash("sha256").update(raw.trim().toLowerCase()).digest("hex");
+function parseGclFromCookie(
+  cookieHeader: string,
+  name: string,
+): string | undefined {
+  const raw = parseCookie(cookieHeader, `_gcl_${name}`);
+  if (!raw) return undefined;
+  const m = raw.match(/^GCL\.\d+\.(.+)$/);
+  return m ? m[1] : raw;
 }
 
-function firstName(full: string) {
-  return full.trim().split(/\s+/)[0] ?? full;
-}
-function lastName(full: string) {
-  const parts = full.trim().split(/\s+/);
-  return parts.length > 1 ? (parts[parts.length - 1] ?? "") : "";
-}
-function cleanPhone(p: string) {
-  return p.replace(/\D/g, "");
-}
+export function parseRequestContext(req: NextRequest): RequestContext {
+  const cookieHeader = req.headers.get("cookie") ?? "";
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    req.headers.get("x-real-ip") ??
+    undefined;
+  const userAgent = req.headers.get("user-agent") ?? undefined;
+  const origin = req.headers.get("origin") ?? undefined;
+  const referer = req.headers.get("referer") ?? undefined;
+  const eventSourceUrl =
+    referer ?? origin ?? process.env.NEXT_PUBLIC_SITE_URL ?? undefined;
 
-export async function sendMetaCAPI(p: CAPIPayload): Promise<void> {
-  const pixelId = process.env.FB_PIXEL_ID;
-  const token = process.env.FB_ACCESS_TOKEN;
-  if (!pixelId || !token) return;
+  const measurementId =
+    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ??
+    process.env.GA_MEASUREMENT_ID ??
+    process.env.NEXT_PUBLIC_GA4_ID;
 
-  const [em, ph, fn, ln, country, externalId] = await Promise.all([
-    sha256(p.email),
-    sha256(cleanPhone(p.whatsapp)),
-    sha256(firstName(p.name)),
-    sha256(lastName(p.name)),
-    sha256("br"),
-    sha256(String(p.leadId)),
-  ]);
-
-  const body = {
-    data: [
-      {
-        event_name: "Lead",
-        event_time: Math.floor(Date.now() / 1000),
-        event_id: String(p.leadId),
-        action_source: "website",
-        event_source_url: p.eventSourceUrl,
-        user_data: {
-          em: [em],
-          ph: [ph],
-          fn: [fn],
-          ln: [ln],
-          country: [country],
-          client_ip_address: p.ip,
-          client_user_agent: p.userAgent,
-          fbc: p.fbc,
-          fbp: p.fbp,
-          external_id: [externalId],
-        },
-        custom_data: {
-          content_name: "Lead Dr. Luiz Fernando",
-          lead_type: p.modelo ? `modelo-${p.modelo}` : "default",
-        },
-      },
-    ],
+  return {
+    ip,
+    userAgent,
+    origin,
+    eventSourceUrl,
+    externalId: parseCookie(cookieHeader, "_eid") ?? randomUUID(),
+    gaClientId: parseGaClientId(cookieHeader),
+    gaSessionId: measurementId
+      ? parseGaSessionId(cookieHeader, measurementId)
+      : undefined,
+    gclid: parseGclFromCookie(cookieHeader, "aw"),
+    wbraid: parseGclFromCookie(cookieHeader, "wbraid"),
+    gbraid: parseGclFromCookie(cookieHeader, "gbraid"),
+    country: req.headers.get("x-vercel-ip-country") ?? undefined,
+    city: req.headers.get("x-vercel-ip-city") ?? undefined,
+    postalCode: req.headers.get("x-vercel-ip-postal-code") ?? undefined,
   };
-
-  try {
-    const r = await fetch(
-      `https://graph.facebook.com/v22.0/${pixelId}/events?access_token=${token}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      },
-    );
-    if (!r.ok) {
-      const txt = await r.text();
-      console.error("[CAPI] HTTP", r.status, txt);
-    }
-  } catch (e) {
-    console.error("[CAPI] erro:", e);
-  }
 }
 
-export async function sendGA4MP(p: GA4Payload): Promise<void> {
-  const measurementId = process.env.NEXT_PUBLIC_GA4_ID;
-  const apiSecret = process.env.GA4_API_SECRET;
-  if (!measurementId || !apiSecret) return;
+export function sha256(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
+}
 
-  const clientId = p.clientId ?? `server.${p.leadId}`;
+export function stripAccents(s: string): string {
+  return s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+
+export function normalizePhoneBR(raw: string): string {
+  let digits = raw.replace(/\D/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.length === 10 || digits.length === 11) return `+55${digits}`;
+  if (
+    (digits.length === 12 || digits.length === 13) &&
+    digits.startsWith("55")
+  ) {
+    return `+${digits}`;
+  }
+  if (digits.startsWith("55")) return `+${digits}`;
+  return `+${digits}`;
+}
+
+function splitName(full: string): { first: string; last: string } {
+  const parts = full.trim().split(/\s+/);
+  const first = parts[0] ?? "";
+  const last = parts.length > 1 ? parts.slice(1).join(" ") : "";
+  return { first, last };
+}
+
+export function buildUserIdentifiers(extras: UserExtras): UserIdentifier[] {
+  const list: UserIdentifier[] = [];
+
+  if (extras.email) {
+    const norm = extras.email.trim().toLowerCase();
+    list.push({ hashedEmail: sha256(norm) });
+  }
+  if (extras.phone) {
+    const norm = normalizePhoneBR(extras.phone);
+    list.push({ hashedPhoneNumber: sha256(norm) });
+  }
+  if (extras.firstName || extras.lastName) {
+    const addressInfo: {
+      hashedFirstName?: string;
+      hashedLastName?: string;
+      countryCode?: string;
+    } = { countryCode: "BR" };
+    if (extras.firstName) {
+      const norm = stripAccents(extras.firstName).trim().toLowerCase();
+      if (norm) addressInfo.hashedFirstName = sha256(norm);
+    }
+    if (extras.lastName) {
+      const norm = stripAccents(extras.lastName).trim().toLowerCase();
+      if (norm) addressInfo.hashedLastName = sha256(norm);
+    }
+    list.push({ addressInfo });
+  }
+
+  return list;
+}
+
+export function buildUserExtrasFromName(
+  fullName: string,
+  email?: string,
+  phone?: string,
+): UserExtras {
+  const { first, last } = splitName(fullName);
+  return { email, phone, firstName: first, lastName: last };
+}
+
+export async function sendGA4Event(input: GA4EventInput): Promise<void> {
+  const measurementId =
+    process.env.GA_MEASUREMENT_ID ??
+    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ??
+    process.env.NEXT_PUBLIC_GA4_ID;
+  const apiSecret = process.env.GA_API_SECRET;
+  if (!measurementId || !apiSecret) {
+    console.warn("[GA4] envs ausentes, pulando evento");
+    return;
+  }
+
+  const clientId =
+    input.clientId ?? `server.${input.transactionId ?? Date.now()}`;
+
+  const params: Record<string, string | number | boolean> = {
+    engagement_time_msec: 100,
+  };
+  if (input.sessionId) params.session_id = input.sessionId;
+  if (input.transactionId) params.transaction_id = input.transactionId;
+  if (typeof input.value === "number") params.value = input.value;
+  if (input.currency) params.currency = input.currency;
+  if (input.params) {
+    for (const [k, v] of Object.entries(input.params)) {
+      if (v !== undefined) params[k] = v;
+    }
+  }
+
   const body = {
     client_id: clientId,
-    user_agent: p.userAgent,
-    document_location: p.eventSourceUrl,
-    events: [
-      {
-        name: "generate_lead",
-        params: {
-          currency: "BRL",
-          lead_id: String(p.leadId),
-          lead_source: p.modelo ? `modelo-${p.modelo}` : "default",
-          session_id: p.sessionId,
-          engagement_time_msec: 1,
-        },
-      },
-    ],
+    timestamp_micros: Date.now() * 1000,
+    user_agent: input.userAgent,
+    events: [{ name: input.eventName, params }],
   };
 
   try {
@@ -147,9 +221,50 @@ export async function sendGA4MP(p: GA4Payload): Promise<void> {
     );
     if (!r.ok && r.status !== 204) {
       const txt = await r.text();
-      console.error("[GA4 MP] HTTP", r.status, txt);
+      console.error("[GA4] HTTP", r.status, txt);
+      return;
     }
+    console.log("[GA4] OK", input.eventName, input.transactionId ?? "");
   } catch (e) {
-    console.error("[GA4 MP] erro:", e);
+    console.error("[GA4] exception", e);
   }
+}
+
+export interface SendGoogleAdsConversionInput {
+  context: RequestContext;
+  userExtras: UserExtras;
+  orderId: string;
+  conversionValue: number;
+  currency: string;
+  validateOnly?: boolean;
+}
+
+export async function sendGoogleAdsConversion(
+  input: SendGoogleAdsConversionInput,
+): Promise<void> {
+  const conversionAction = process.env.GOOGLE_ADS_CONVERSION_ACTION;
+  if (!conversionAction) {
+    console.warn("[GADS] GOOGLE_ADS_CONVERSION_ACTION ausente, pulando");
+    return;
+  }
+
+  const userIdentifiers = buildUserIdentifiers(input.userExtras);
+  if (userIdentifiers.length === 0) {
+    console.warn("[GADS] sem user_identifiers, pulando");
+    return;
+  }
+
+  await uploadClickConversion({
+    conversionAction,
+    orderId: input.orderId,
+    gclid: input.context.gclid,
+    wbraid: input.context.wbraid,
+    gbraid: input.context.gbraid,
+    conversionDateTime: buildConversionDateTimeBR(),
+    conversionValue: input.conversionValue,
+    currencyCode: input.currency,
+    userIdentifiers,
+    userAgent: input.context.userAgent,
+    validateOnly: input.validateOnly,
+  });
 }
