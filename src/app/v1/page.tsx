@@ -79,7 +79,7 @@ export default function V1() {
       {/* HERO */}
       <section
         ref={heroRef}
-        className="relative mx-auto max-w-7xl px-6 md:px-10 pt-12 md:pt-24 pb-24 md:pb-40"
+        className="relative mx-auto max-w-7xl px-6 md:px-10 pt-10 md:pt-16 pb-16 md:pb-24"
       >
         <motion.div
           style={{ y: yBg, opacity: opacityBg }}
@@ -89,7 +89,7 @@ export default function V1() {
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[var(--color-v1-gold-soft)]/40 to-transparent blur-3xl" />
         </motion.div>
 
-        <div className="relative grid md:grid-cols-12 gap-12 items-end">
+        <div className="relative grid md:grid-cols-12 gap-10 items-end">
           <div className="md:col-span-8 z-10">
             <Reveal delay={0.1}>
               <div className="flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-[var(--color-v1-muted)]">
@@ -98,17 +98,17 @@ export default function V1() {
               </div>
             </Reveal>
 
-            <h1 className="mt-8 font-serif text-[clamp(2.5rem,6vw,5.5rem)] leading-[1.02] tracking-tight text-balance">
+            <h1 className="mt-6 font-serif text-[clamp(2.5rem,6vw,5.5rem)] leading-[1.02] tracking-tight text-balance">
               <WordReveal text={headlines.v1} />
             </h1>
 
-            <Reveal delay={0.3} className="mt-10 max-w-2xl">
+            <Reveal delay={0.3} className="mt-6 max-w-2xl">
               <p className="text-lg md:text-xl leading-relaxed text-[var(--color-v1-ink-soft)] text-pretty">
                 {subheadline}
               </p>
             </Reveal>
 
-            <Reveal delay={0.5} className="mt-12 flex flex-wrap gap-4">
+            <Reveal delay={0.5} className="mt-8 flex flex-wrap gap-4">
               <MagneticButton>
                 <a
                   href="#contato"
@@ -143,7 +143,7 @@ export default function V1() {
                 Anos em direito tributário
               </div>
 
-              <div className="mt-8 grid grid-cols-2 gap-6">
+              <div className="mt-6 grid grid-cols-2 gap-6">
                 <div>
                   <div className="font-serif text-3xl">
                     <Counter to={500} suffix="+" />
@@ -168,7 +168,7 @@ export default function V1() {
       {/* PROBLEMA */}
       <section
         id="problema"
-        className="relative mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-24"
+        className="relative mx-auto max-w-7xl px-6 md:px-10 py-14 md:py-18"
       >
         <div className="grid md:grid-cols-12 gap-10">
           <div className="md:col-span-4">
@@ -186,7 +186,7 @@ export default function V1() {
                 {problema.titulo}
               </h2>
             </Reveal>
-            <div className="mt-10 space-y-6 text-lg md:text-xl leading-relaxed text-[var(--color-v1-ink-soft)] text-pretty">
+            <div className="mt-8 space-y-4 text-lg md:text-xl leading-relaxed text-[var(--color-v1-ink-soft)] text-pretty">
               {problema.paragrafos.map((p, i) => (
                 <Reveal key={i} delay={i * 0.05}>
                   <p>{p}</p>
@@ -198,7 +198,7 @@ export default function V1() {
       </section>
 
       {/* DOR */}
-      <section className="relative bg-[var(--color-v1-ink)] text-[var(--color-v1-paper)] py-20 md:py-28 overflow-hidden">
+      <section className="relative bg-[var(--color-v1-ink)] text-[var(--color-v1-paper)] py-14 md:py-20 overflow-hidden">
         <ParallaxY
           range={80}
           className="absolute -top-40 -right-40 w-[800px] h-[800px] rounded-full bg-[var(--color-v1-gold)]/8 blur-3xl"
@@ -219,7 +219,7 @@ export default function V1() {
                 </h2>
               </Reveal>
             </div>
-            <div className="md:col-span-7 space-y-5 text-lg md:text-xl leading-relaxed text-[var(--color-v1-paper)]/80 text-pretty">
+            <div className="md:col-span-7 space-y-4 text-lg md:text-xl leading-relaxed text-[var(--color-v1-paper)]/80 text-pretty">
               {dor.paragrafos.map((p, i) => (
                 <Reveal key={i} delay={i * 0.04}>
                   <p
@@ -241,7 +241,7 @@ export default function V1() {
       {/* SOLUÇÃO */}
       <section
         id="solucao"
-        className="relative mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-24"
+        className="relative mx-auto max-w-7xl px-6 md:px-10 py-14 md:py-18"
       >
         <Reveal>
           <div className="text-xs uppercase tracking-[0.3em] text-[var(--color-v1-gold)]">
@@ -259,7 +259,7 @@ export default function V1() {
           </p>
         </Reveal>
 
-        <div className="mt-16 grid md:grid-cols-3 gap-6">
+        <div className="mt-12 grid md:grid-cols-3 gap-6">
           {solucao.servicos.map((s, i) => (
             <Reveal key={s.nome} delay={i * 0.1}>
               <motion.div
@@ -276,21 +276,21 @@ export default function V1() {
                 <p className="mt-4 text-[var(--color-v1-ink-soft)] leading-relaxed text-pretty">
                   {s.descricao}
                 </p>
-                <div className="mt-10 h-px bg-[var(--color-v1-ink)]/10 group-hover:bg-[var(--color-v1-gold)] transition-colors" />
+                <div className="mt-6 h-px bg-[var(--color-v1-ink)]/10 group-hover:bg-[var(--color-v1-gold)] transition-colors" />
               </motion.div>
             </Reveal>
           ))}
         </div>
 
         <Reveal delay={0.4}>
-          <p className="mt-12 max-w-3xl text-xl font-serif italic text-[var(--color-v1-ink-soft)] leading-relaxed">
+          <p className="mt-8 max-w-3xl text-xl font-serif italic text-[var(--color-v1-ink-soft)] leading-relaxed">
             “{solucao.outro}”
           </p>
         </Reveal>
       </section>
 
       {/* PROVA SOCIAL */}
-      <section className="relative bg-[var(--color-v1-paper)] py-20 md:py-24 border-y border-[var(--color-v1-ink)]/10">
+      <section className="relative bg-[var(--color-v1-paper)] py-14 md:py-18 border-y border-[var(--color-v1-ink)]/10">
         <div className="mx-auto max-w-5xl px-6 md:px-10 text-center">
           <Reveal>
             <div className="text-xs uppercase tracking-[0.3em] text-[var(--color-v1-gold)]">
@@ -303,12 +303,12 @@ export default function V1() {
             </h2>
           </Reveal>
           <Reveal delay={0.2}>
-            <p className="mt-8 max-w-2xl mx-auto text-lg text-[var(--color-v1-ink-soft)] leading-relaxed">
+            <p className="mt-6 max-w-2xl mx-auto text-lg text-[var(--color-v1-ink-soft)] leading-relaxed">
               {provaSocial.texto}
             </p>
           </Reveal>
 
-          <div className="mt-16 grid md:grid-cols-3 gap-6 text-left">
+          <div className="mt-12 grid md:grid-cols-3 gap-6 text-left">
             {[
               { label: "Imóveis salvos", n: 120, suf: "+" },
               { label: "Empresas em pé", n: 230, suf: "+" },
@@ -330,7 +330,7 @@ export default function V1() {
       </section>
 
       {/* DIFERENCIAIS */}
-      <section className="relative mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-24">
+      <section className="relative mx-auto max-w-7xl px-6 md:px-10 py-14 md:py-18">
         <div className="grid md:grid-cols-12 gap-10">
           <div className="md:col-span-5">
             <Reveal delay={0.1}>
@@ -361,7 +361,7 @@ export default function V1() {
       {/* COMO FUNCIONA */}
       <section
         id="como-funciona"
-        className="relative bg-[var(--color-v1-ink)] text-[var(--color-v1-paper)] py-20 md:py-24"
+        className="relative bg-[var(--color-v1-ink)] text-[var(--color-v1-paper)] py-14 md:py-18"
       >
         <div className="mx-auto max-w-7xl px-6 md:px-10">
           <Reveal>
@@ -375,7 +375,7 @@ export default function V1() {
             </h2>
           </Reveal>
 
-          <div className="mt-16 grid md:grid-cols-3 gap-8 relative">
+          <div className="mt-12 grid md:grid-cols-3 gap-8 relative">
             <div
               className="hidden md:block absolute top-12 left-[14%] right-[14%] h-px bg-[var(--color-v1-gold)]/30"
               aria-hidden
@@ -406,7 +406,7 @@ export default function V1() {
       {/* CTA FINAL */}
       <section
         id="contato"
-        className="relative mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-28"
+        className="relative mx-auto max-w-7xl px-6 md:px-10 py-14 md:py-20"
       >
         <div className="grid md:grid-cols-12 gap-10">
           <div className="md:col-span-7">
@@ -416,7 +416,7 @@ export default function V1() {
               </h2>
             </Reveal>
             <Reveal delay={0.2}>
-              <p className="mt-8 text-xl text-[var(--color-v1-ink-soft)] leading-relaxed max-w-xl">
+              <p className="mt-6 text-xl text-[var(--color-v1-ink-soft)] leading-relaxed max-w-xl">
                 {ctaFinal.texto}
               </p>
             </Reveal>
@@ -425,7 +425,7 @@ export default function V1() {
                 {ctaFinal.apoio}
               </p>
             </Reveal>
-            <Reveal delay={0.4} className="mt-10 flex flex-wrap gap-4">
+            <Reveal delay={0.4} className="mt-8 flex flex-wrap gap-4">
               <MagneticButton>
                 <a
                   href="#contato"
