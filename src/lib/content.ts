@@ -1,5 +1,5 @@
 export const subheadline =
-  "Consultoria jurídica tributária para empresários e famílias que constroem com seriedade — e merecem proteger com a mesma seriedade.";
+  "Consultoria jurídica tributária para empresários e famílias que constroem com seriedade, e merecem proteger com a mesma seriedade.";
 
 export const headlines = {
   v1: "Quanto do que você construiu vai realmente chegar para os seus filhos?",
@@ -11,7 +11,7 @@ export const problema = {
   titulo:
     "A dívida fiscal não para de crescer. E o patrimônio que você levou anos para construir está em risco.",
   paragrafos: [
-    "Seja uma empresa sufocada por impostos em aberto, ou uma família sem estrutura para proteger o que foi conquistado — o tempo joga contra você.",
+    "Seja uma empresa sufocada por impostos em aberto, ou uma família sem estrutura para proteger o que foi conquistado, o tempo joga contra você.",
     "Cada mês sem ação é multa, juros e menos margem para negociar.",
     "Cada ano sem planejamento é imposto pago a mais e herança que o governo vai consumir.",
     "Você não chegou até aqui para perder nas burocracias do fisco.",
@@ -26,7 +26,7 @@ export const dor = {
     "É o medo silencioso de perder o que levou décadas para construir.",
     "Patrimônio desprotegido não é só descuido.",
     "É risco real para sua família, para sua empresa, para tudo que você deixará para trás.",
-    "Em mais de 23 anos de atuação em direito tributário, estivemos ao lado de empresários e famílias nos momentos mais críticos — e encontramos saída onde parecia não haver nenhuma.",
+    "Em mais de 23 anos de atuação em direito tributário, estivemos ao lado de empresários e famílias nos momentos mais críticos, e encontramos saída onde parecia não haver nenhuma.",
     "Não por fórmula. Por conhecimento profundo da legislação, estratégia construída caso a caso e honestidade sobre o que é possível desde o primeiro dia.",
   ],
 };
@@ -60,18 +60,18 @@ export const provaSocial = {
   titulo:
     "Imóveis salvos. Empresas que continuaram de pé. Patrimônios protegidos.",
   texto:
-    "Nossos resultados não são promessas — são histórias reais de clientes que chegaram no limite e encontraram um caminho.",
+    "Nossos resultados não são promessas, são histórias reais de clientes que chegaram no limite e encontraram um caminho.",
 };
 
 export const diferenciais = {
   titulo: "Por que trabalhar com a gente",
   lista: [
     "23 anos de experiência em direito tributário",
-    "Atuação 100% dentro da legalidade — sem riscos desnecessários",
+    "Atuação 100% dentro da legalidade, sem riscos desnecessários",
     "Avaliamos seu caso antes de qualquer proposta",
     "Transparência total sobre riscos e possibilidades",
     "Atendimento presencial e remoto em todo o Brasil",
-    "Relação de confiança — não de transação",
+    "Relação de confiança, não de transação",
   ],
 };
 

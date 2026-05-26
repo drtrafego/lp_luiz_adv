@@ -163,17 +163,6 @@ export default function V1() {
           </div>
         </div>
 
-        {/* editorial signature */}
-        <div className="mt-24 grid md:grid-cols-12 gap-8 items-end">
-          <div className="md:col-span-3 text-[10px] uppercase tracking-[0.3em] text-[var(--color-v1-muted)]">
-            <span className="text-[var(--color-v1-gold)]">N°</span> 01 ·
-            Editorial
-          </div>
-          <div className="md:col-span-6 h-px bg-[var(--color-v1-ink)]/15" />
-          <div className="md:col-span-3 text-[10px] uppercase tracking-[0.3em] text-[var(--color-v1-muted)] md:text-right">
-            São Paulo · Brasil
-          </div>
-        </div>
       </section>
 
       {/* PROBLEMA */}
@@ -185,10 +174,7 @@ export default function V1() {
           <div className="md:col-span-4">
             <Reveal>
               <div className="sticky top-24">
-                <div className="text-xs uppercase tracking-[0.3em] text-[var(--color-v1-gold)]">
-                  Capítulo I
-                </div>
-                <div className="mt-3 font-serif text-2xl text-[var(--color-v1-ink-soft)]">
+                <div className="font-serif text-2xl text-[var(--color-v1-ink-soft)]">
                   O Problema
                 </div>
               </div>
@@ -224,7 +210,7 @@ export default function V1() {
             <div className="md:col-span-5">
               <Reveal>
                 <div className="text-xs uppercase tracking-[0.3em] text-[var(--color-v1-gold-soft)]">
-                  Capítulo II · A Verdade
+                  A Verdade
                 </div>
               </Reveal>
               <Reveal delay={0.1}>
@@ -259,7 +245,7 @@ export default function V1() {
       >
         <Reveal>
           <div className="text-xs uppercase tracking-[0.3em] text-[var(--color-v1-gold)]">
-            Capítulo III · Como atuamos
+            Como atuamos
           </div>
         </Reveal>
         <Reveal delay={0.1}>
@@ -347,13 +333,8 @@ export default function V1() {
       <section className="relative mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-24">
         <div className="grid md:grid-cols-12 gap-10">
           <div className="md:col-span-5">
-            <Reveal>
-              <div className="text-xs uppercase tracking-[0.3em] text-[var(--color-v1-gold)]">
-                Capítulo IV
-              </div>
-            </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="mt-6 font-serif text-[clamp(2rem,3.6vw,3.5rem)] leading-[1.05] tracking-tight">
+              <h2 className="font-serif text-[clamp(2rem,3.6vw,3.5rem)] leading-[1.05] tracking-tight">
                 {diferenciais.titulo}
               </h2>
             </Reveal>
@@ -477,14 +458,9 @@ export default function V1() {
 
       {/* footer */}
       <footer className="border-t border-[var(--color-v1-ink)]/10 py-10">
-        <div className="mx-auto max-w-7xl px-6 md:px-10 flex flex-col md:flex-row gap-4 items-center justify-between text-xs text-[var(--color-v1-muted)]">
-          <div>
-            © {new Date().getFullYear()} Dr. Luiz Fernando · Consultoria Jurídica
-            Tributária
-          </div>
-          <div className="uppercase tracking-[0.2em]">
-            Modelo 01 · Editorial Sóbrio
-          </div>
+        <div className="mx-auto max-w-7xl px-6 md:px-10 text-center text-xs text-[var(--color-v1-muted)]">
+          © {new Date().getFullYear()} Dr. Luiz Fernando · Consultoria Jurídica
+          Tributária
         </div>
       </footer>
     </main>

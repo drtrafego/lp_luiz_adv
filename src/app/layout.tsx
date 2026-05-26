@@ -40,7 +40,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dr. Luiz Fernando — Consultoria Jurídica Tributária",
+  title: "Dr. Luiz Fernando, Consultoria Jurídica Tributária",
   description:
     "23 anos de atuação em direito tributário. Gestão de passivo fiscal, transação tributária e planejamento fiscal e sucessório.",
 };
