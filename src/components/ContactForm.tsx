@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import PhoneInputWithFlag from "./PhoneInputWithFlag";
 
 type Variant = "v1" | "v2" | "v3";
 
@@ -38,15 +39,6 @@ function generateEventId(): string {
     return crypto.randomUUID();
   }
   return `eid_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-}
-
-function maskPhone(v: string): string {
-  const d = v.replace(/\D/g, "").slice(0, 11);
-  if (d.length <= 2) return d;
-  if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
-  if (d.length <= 10)
-    return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
-  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 }
 
 const themes: Record<
@@ -116,6 +108,7 @@ export function ContactForm({
 
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [whatsappValid, setWhatsappValid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -136,15 +129,15 @@ export function ContactForm({
     if (loading) return;
     setErr(null);
 
-    const digits = whatsapp.replace(/\D/g, "");
     if (name.trim().length < 2) {
       setErr("Informe seu nome completo.");
       return;
     }
-    if (digits.length < 10) {
-      setErr("Informe um WhatsApp válido com DDD.");
+    if (!whatsappValid) {
+      setErr("Informe um WhatsApp válido.");
       return;
     }
+    const digits = whatsapp.replace(/\D/g, "");
 
     setLoading(true);
     try {
@@ -236,15 +229,13 @@ export function ContactForm({
         </div>
         <div>
           <label className={t.label}>WhatsApp</label>
-          <input
-            type="tel"
-            inputMode="numeric"
+          <PhoneInputWithFlag
             value={whatsapp}
-            onChange={(e) => setWhatsapp(maskPhone(e.target.value))}
-            placeholder="(11) 99999-9999"
-            className={t.input}
-            required
-            autoComplete="tel"
+            onChange={(v, valid) => {
+              setWhatsapp(v);
+              setWhatsappValid(valid);
+            }}
+            className="mt-2"
           />
         </div>
 
